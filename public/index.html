@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .example {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            border: 1px solid black;
+            border-radius: 6px;
+            background-color: beige;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 2px 2px 2px black;
+            color: red;
+            font-size: 24px;
+        }
+
+        .example__heading {
+            color: brown;
+            text-align: center;
+        }
+
+        .example__button {
+            width: auto;
+            height: 30px;
+            border: 1px solid black;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+    <div class="example" id="example">
+        <h3 class="example__heading">Naciśnij guziczek i coś się stanie.</h3>
+        <button class="example__button" type="button" onclick="funkcja()">Niech się dzieje!</button>
+    </div>
+    <script>
+        function funkcja() {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function () {
+                document.getElementById("example").innerHTML = this.responseText;
+            }
+            xhttp.open("GET", "text.txt")
+            xhttp.send()
+        }
+    </script>
+</body>
+
+</html>
