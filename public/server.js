@@ -2,8 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
-let responseJSON = {};
-module.exports = { responseJSON };
 
 app.use(express.static("public"));
 app.get("/index.html", function (req, res) {
