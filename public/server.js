@@ -1,18 +1,15 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const app = express();
-const urlEncodedParser = bodyParser.urlencoded({ extended: false });
+const data = [];
 
-app.use(express.static("public"));
-app.get("/index.html", function (req, res) {
-  res.sendFile(__dirname + "/" + "index.html");
+app.use(express.static("../src"));
+app.get("/", function (req, res) {
+  res.sendFile("index.html");
 });
-app.post("/posted", urlEncodedParser, function (req, res) {
-  responseJSON = {
-    name: req.body.name,
-    surname: req.body.surname,
-  };
-  res.send(responseJSON);
+app.use(express.json());
+app.post("/", (req, res) => {
+  data.push(req.body);
+  res.status(201).send(data);
 });
 
 const server = app.listen(3000, function () {
