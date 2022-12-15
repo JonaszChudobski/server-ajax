@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const data = [];
+let idCounter = 1;
 
 app.use(express.static("../src"));
 app.get("/", function (req, res) {
@@ -8,7 +9,8 @@ app.get("/", function (req, res) {
 });
 app.use(express.json());
 app.post("/", (req, res) => {
-  data.push(req.body);
+  data.push({ userId: idCounter, user: req.body });
+  idCounter += 1;
   res.status(201).send(data);
 });
 
