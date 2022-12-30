@@ -28,7 +28,14 @@
         }
 
         .example--height {
-            height: 60px;
+            height: 110px;
+        }
+
+        .example--position {
+            display: none;
+            position: absolute;
+            left: 800px;
+            top: 8px;
         }
 
         .example__heading {
@@ -37,10 +44,10 @@
         }
 
         .example__button {
-            width: auto;
-            height: 30px;
+            margin-bottom: 4px;
+            width: 200px;
+            height: 20px;
             border: 1px solid black;
-            border-radius: 6px;
             cursor: pointer;
         }
 
@@ -73,27 +80,92 @@
     </div>
     <div class="example example--height" id="example_1">
     </div>
+    <div class="example example--position">
+        <h3 class="example__heading">Edytuj dane</h3>
+        <form id="names">
+            <label for="nameedit">Imię:</label>
+            <input id="nameedit" type="text" name="nameedit">
+            <label for="surnameedit">Nazwisko:</label>
+            <input id="surnameedit" type="text" name="surnameedit">
+            <input id="put" type="submit" value="Prześlij">
+            <button id="exit" class="example__button" type="button">Zamknij</button>
+        </form>
+    </div>
 </body>
 <script>
+    const putBtn = document.querySelector('#put');
     const example = document.querySelector('.example--height');
     const name = document.querySelector("#name");
-    const surname = document.querySelector("surname");
+    const surname = document.querySelector("#surname");
+    const nameEdit = document.querySelector('#nameedit');
+    const surnameEdit = document.querySelector('#surnameedit');
     const form = document.querySelector("#names");
     const responseText = document.querySelector('.example__text');
+    const exitButton = document.querySelector('#exit')
+    let currentUser;
     let data;
-    let heightCounter = 60;
+    let heightCounter = 110;
     let responseName;
     let responseSurname;
     let responseLength;
     let responseUser = [];
 
-    const addPar = (someText) => {
+
+    const editWn = () => {
+        const editWindow = document.querySelector('.example--position');
+        const editBtn = document.querySelector('#edit');
+        editWindow.style.display = 'flex';
+    };
+
+    const makeHidden = () => {
+        const editWindow = document.querySelector('.example--position');
+        const exitBtn = document.querySelector('#exit');
+        editWindow.style.display = 'none';
+    }
+
+    const onClickClose = () => {
+        makeHidden();
+    }
+    exitButton.addEventListener('click', onClickClose);
+
+    const onClick = (event) => {
+        let target = event.target;
+        if (target.nodeName !== 'BUTTON') {
+            return;
+        } else if (target.id !== 'delete') {
+            currentUser = target.name;
+            editWn();
+        } else {
+            currentUser = target.name;
+            console.log(currentUser);
+            deleting(event);
+        }
+    }
+    example.addEventListener('click', onClick);
+
+    const addPar = (someText, idNumber) => {
         const newPar = document.createElement('p');
+        const newEditBtn = document.createElement('button');
+        const newDelBtn = document.createElement('button');
         newPar.classList.add('example__text');
         newPar.innerHTML = someText;
+        newEditBtn.classList.add('example__button');
+        newEditBtn.setAttribute('type', 'button')
+        newEditBtn.setAttribute('id', 'edit');
+        newEditBtn.setAttribute('name', idNumber);
+        newEditBtn.dataset.action = 'editWn';
+        newEditBtn.innerHTML = 'Edytuj';
+        newDelBtn.classList.add('example__button')
+        newDelBtn.setAttribute('type', 'button');
+        newDelBtn.setAttribute('id', 'delete');
+        newDelBtn.setAttribute('name', idNumber);
+        newDelBtn.dataset.action = 'delete';
+        newDelBtn.innerHTML = 'Usuń';
         example.style.height = `${heightCounter}px`;
-        heightCounter += 50;
+        heightCounter += 110;
         example.appendChild(newPar);
+        example.appendChild(newEditBtn);
+        example.appendChild(newDelBtn);
     }
     const posting = (event) => {
         event.preventDefault();
@@ -115,12 +187,51 @@
             .then((response) => response.json())
             .then((response) => {
                 responseLength = response.length
+                responseIdNumber = response[responseLength - 1]['userId'];
                 responseInnerText = `user no. ${response[responseLength - 1]['userId']} is: <br>${response[responseLength - 1]['user']['name']} ${response[responseLength - 1]['user']['surname']}`;
-                addPar(responseInnerText);
+                addPar(responseInnerText, responseIdNumber);
                 console.log(JSON.stringify(response));
             })
     };
     form.addEventListener("submit", posting);
+
+    const putting = (event) => {
+        event.preventDefault();
+        data = {
+            name: nameEdit.value,
+            surname: surnameEdit.value,
+        };
+        fetch(`/data/${currentUser}`, {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                responseIdNumber = response['userId'];
+                responseInnerText = `user no. ${response['userId']} is now: <br>${response['user']['name']} ${response['user']['surname']}`;
+                addPar(responseInnerText, responseIdNumber);
+                console.log(JSON.stringify(response));
+            })
+    };
+    putBtn.addEventListener('click', putting);
+
+    const deleting = (event) => {
+        event.preventDefault();
+        fetch(`/data/${currentUser}`, {
+            method: "DELETE",
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                responseInnerText = `user no. ${currentUser} was deleted`;
+                addPar(responseInnerText, '');
+                console.log(JSON.stringify(response));
+            })
+    };
+
 </script>
 
 </html>
