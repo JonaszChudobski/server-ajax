@@ -10,10 +10,15 @@
 
 <body>
     <style>
+        .container {
+            margin: 0 auto;
+            position: relative;
+            width: 80%;
+        }
+
         .example {
             width: 300px;
             height: 300px;
-            margin: 0 auto;
             margin-bottom: 20px;
             border: 1px solid black;
             border-radius: 6px;
@@ -27,15 +32,29 @@
             font-size: 24px;
         }
 
+        .example--buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .example--flex {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
         .example--height {
-            height: 110px;
+            display: flex;
+            flex-direction: row;
+            padding: 0 6px;
         }
 
         .example--position {
-            display: none;
             position: absolute;
-            left: 800px;
-            top: 8px;
+            left: 320px;
+            top: 0;
+            display: none;
         }
 
         .example__heading {
@@ -44,19 +63,18 @@
         }
 
         .example__button {
-            margin-bottom: 4px;
-            width: 200px;
-            height: 20px;
+            margin: 0 0 1px 6px;
+            width: 100px;
             border: 1px solid black;
             cursor: pointer;
+            font-size: 12px;
         }
 
         .example__text {
-            font-size: 16px;
+            font-size: 18px;
             margin: 4px 0 4px;
             color: black;
             width: 200px;
-            height: 40px;
             border: 1px solid black;
             background-color: white;
         }
@@ -68,43 +86,46 @@
             gap: 10px;
         }
     </style>
-    <div class="example" id="example_2">
-        <h3 class="example__heading">Wpisz jakieś dane</h3>
-        <form id="names">
-            <label for="name">Imię:</label>
-            <input id="name" type="text" name="name">
-            <label for="surname">Nazwisko:</label>
-            <input id="surname" type="text" name="surname">
-            <input type="submit" value="Prześlij">
-        </form>
-    </div>
-    <div class="example example--height" id="example_1">
-    </div>
-    <div class="example example--position">
-        <h3 class="example__heading">Edytuj dane</h3>
-        <form id="names">
-            <label for="nameedit">Imię:</label>
-            <input id="nameedit" type="text" name="nameedit">
-            <label for="surnameedit">Nazwisko:</label>
-            <input id="surnameedit" type="text" name="surnameedit">
-            <input id="put" type="submit" value="Prześlij">
-            <button id="exit" class="example__button" type="button">Zamknij</button>
-        </form>
+    <div class="container">
+        <div class="example" id="example_2">
+            <h3 class="example__heading">Wpisz jakieś dane</h3>
+            <form id="names">
+                <label for="name">Imię:</label>
+                <input id="name" type="text" name="name">
+                <label for="surname">Nazwisko:</label>
+                <input id="surname" type="text" name="surname">
+                <input type="submit" value="Prześlij">
+            </form>
+        </div>
+        <div class="example--flex">
+        </div>
+        <div class="example example--position">
+            <h3 class="example__heading">Edytuj dane</h3>
+            <form id="namesEdit">
+                <label for="nameedit">Imię:</label>
+                <input id="nameedit" type="text" name="nameedit">
+                <label for="surnameedit">Nazwisko:</label>
+                <input id="surnameedit" type="text" name="surnameedit">
+                <input id="put" type="submit" value="Prześlij">
+                <button id="exit" type="button">Zamknij</button>
+            </form>
+        </div>
     </div>
 </body>
 <script>
     const putBtn = document.querySelector('#put');
-    const example = document.querySelector('.example--height');
+    const example = document.querySelector('.example--flex');
     const name = document.querySelector("#name");
     const surname = document.querySelector("#surname");
     const nameEdit = document.querySelector('#nameedit');
     const surnameEdit = document.querySelector('#surnameedit');
     const form = document.querySelector("#names");
+    const formEdit = document.querySelector("#namesEdit");
     const responseText = document.querySelector('.example__text');
     const exitButton = document.querySelector('#exit')
     let currentUser;
     let data;
-    let heightCounter = 110;
+    let heightCounter = 0;
     let responseName;
     let responseSurname;
     let responseLength;
@@ -137,36 +158,53 @@
             editWn();
         } else {
             currentUser = target.name;
-            console.log(currentUser);
             deleting(event);
         }
     }
-    example.addEventListener('click', onClick);
 
-    const addPar = (someText, idNumber) => {
+    const addPar = (someData) => {
+        const existingDiv = document.querySelector('.example--height');
+        if (existingDiv) {
+            existingDiv.remove();
+        }
+        heightCounter = 44;
+        const newBtnDiv = document.createElement('div');
+        newBtnDiv.classList.add('example--buttons');
+        let someInnerText = '';
+        for (elem of someData) {
+            someInnerText += `user no. ${elem['userId']} is: <br> ${elem['user']['name']} ${elem['user']['surname']} <br>`;
+            const newEditBtn = document.createElement('button');
+            newEditBtn.classList.add('example__button');
+            newEditBtn.setAttribute('type', 'button');
+            newEditBtn.setAttribute('id', 'edit');
+            newEditBtn.setAttribute('name', elem['userId']);
+            newEditBtn.dataset.action = 'editWn';
+            newEditBtn.innerHTML = `Edytuj ${elem['userId']}`;
+            newBtnDiv.append(newEditBtn);
+            const newDelBtn = document.createElement('button');
+            newDelBtn.classList.add('example__button');
+            newDelBtn.setAttribute('type', 'button');
+            newDelBtn.setAttribute('id', 'delete');
+            newDelBtn.setAttribute('name', elem['userId']);
+            newDelBtn.dataset.action = 'delete';
+            newDelBtn.innerHTML = `Usuń ${elem['userId']}`;
+            newBtnDiv.append(newDelBtn);
+            heightCounter += 44;
+        }
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('example');
+        newDiv.classList.add('example--height');
+        newDiv.style.height = `${heightCounter}px`;
         const newPar = document.createElement('p');
-        const newEditBtn = document.createElement('button');
-        const newDelBtn = document.createElement('button');
         newPar.classList.add('example__text');
-        newPar.innerHTML = someText;
-        newEditBtn.classList.add('example__button');
-        newEditBtn.setAttribute('type', 'button')
-        newEditBtn.setAttribute('id', 'edit');
-        newEditBtn.setAttribute('name', idNumber);
-        newEditBtn.dataset.action = 'editWn';
-        newEditBtn.innerHTML = 'Edytuj';
-        newDelBtn.classList.add('example__button')
-        newDelBtn.setAttribute('type', 'button');
-        newDelBtn.setAttribute('id', 'delete');
-        newDelBtn.setAttribute('name', idNumber);
-        newDelBtn.dataset.action = 'delete';
-        newDelBtn.innerHTML = 'Usuń';
-        example.style.height = `${heightCounter}px`;
-        heightCounter += 110;
-        example.appendChild(newPar);
-        example.appendChild(newEditBtn);
-        example.appendChild(newDelBtn);
-    }
+        newPar.style.height = `${heightCounter - 20}px`;
+        newPar.innerHTML = someInnerText;
+        newDiv.append(newPar);
+        newDiv.append(newBtnDiv);
+        example.append(newDiv);
+        newDiv.addEventListener('click', onClick);
+    };
+
     const posting = (event) => {
         event.preventDefault();
         const {
@@ -186,20 +224,18 @@
         })
             .then((response) => response.json())
             .then((response) => {
-                responseLength = response.length
-                responseIdNumber = response[responseLength - 1]['userId'];
-                responseInnerText = `user no. ${response[responseLength - 1]['userId']} is: <br>${response[responseLength - 1]['user']['name']} ${response[responseLength - 1]['user']['surname']}`;
-                addPar(responseInnerText, responseIdNumber);
+                addPar(response);
                 console.log(JSON.stringify(response));
             })
+        form.reset();
     };
     form.addEventListener("submit", posting);
 
     const putting = (event) => {
         event.preventDefault();
         data = {
-            name: nameEdit.value,
-            surname: surnameEdit.value,
+            name: nameedit.value,
+            surname: surnameedit.value,
         };
         fetch(`/data/${currentUser}`, {
             method: "PUT",
@@ -211,25 +247,26 @@
         })
             .then((response) => response.json())
             .then((response) => {
-                responseIdNumber = response['userId'];
-                responseInnerText = `user no. ${response['userId']} is now: <br>${response['user']['name']} ${response['user']['surname']}`;
-                addPar(responseInnerText, responseIdNumber);
+                addPar(response);
                 console.log(JSON.stringify(response));
             })
+        formEdit.reset();
+        makeHidden();
     };
     putBtn.addEventListener('click', putting);
 
     const deleting = (event) => {
-        event.preventDefault();
-        fetch(`/data/${currentUser}`, {
-            method: "DELETE",
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                responseInnerText = `user no. ${currentUser} was deleted`;
-                addPar(responseInnerText, '');
-                console.log(JSON.stringify(response));
+        if (confirm('Are you sure?') === true) {
+            event.preventDefault();
+            fetch(`/data/${currentUser}`, {
+                method: "DELETE",
             })
+                .then((response) => response.json())
+                .then((response) => {
+                    addPar(response);
+                    console.log(JSON.stringify(response));
+                })
+        } else { return };
     };
 
 </script>
