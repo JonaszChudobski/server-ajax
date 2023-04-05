@@ -1,8 +1,7 @@
 const methods = require("../src/methods");
 const express = require("express");
+const data = require("../src/data");
 const app = express();
-
-let data = new Map();
 
 app.use(express.static("../src"));
 app.get("/", function (req, res) {
@@ -12,29 +11,29 @@ app.get("/", function (req, res) {
 app.use(express.json());
 app.post("/", (req, res) => {
   let userId = methods.createUuid();
-  data.set(userId, req.body);
-  res.status(201).send(Object.fromEntries(data));
+  data.dataStorage.set(userId, req.body);
+  res.status(201).send(Object.fromEntries(data.dataStorage));
 });
 
 app.put("/data/:user", (req, res) => {
   const user = req.params.user;
   const body = req.body;
-  methods.findElement(data, user);
+  methods.findElement(data.dataStorage, user);
   if (account === undefined) {
     return res.status(404).json({ error: "User does not exist" });
   }
-  methods.putData(data, user, body);
-  res.status(201).send(Object.fromEntries(data));
+  methods.putData(data.dataStorage, user, body);
+  res.status(201).send(Object.fromEntries(data.dataStorage));
 });
 
 app.delete("/data/:user", (req, res) => {
   const user = req.params.user;
-  methods.findElement(data, user);
+  methods.findElement(data.dataStorage, user);
   if (account === undefined) {
     return res.status(404).json({ error: "User does not exist" });
   }
-  methods.deleteData(data, user);
-  res.status(201).send(Object.fromEntries(data));
+  methods.deleteData(data.dataStorage, user);
+  res.status(201).send(Object.fromEntries(data.dataStorage));
 });
 
 const server = app.listen(3000, function () {
