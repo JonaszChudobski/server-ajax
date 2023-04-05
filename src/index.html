@@ -71,7 +71,7 @@
         }
 
         .example__text {
-            font-size: 18px;
+            font-size: 12px;
             margin: 4px 0 4px;
             color: black;
             width: 200px;
@@ -171,23 +171,23 @@
         const newBtnDiv = document.createElement('div');
         newBtnDiv.classList.add('example--buttons');
         let someInnerText = '';
-        for (elem of someData) {
-            someInnerText += `user no. ${elem['userId']} is: <br> ${elem['user']['name']} ${elem['user']['surname']} <br>`;
+        for (const elem in someData) {
+            someInnerText += `user no. ${elem} <br> is: ${someData[elem]['name']} ${someData[elem]['surname']}<br>`;
             const newEditBtn = document.createElement('button');
             newEditBtn.classList.add('example__button');
             newEditBtn.setAttribute('type', 'button');
             newEditBtn.setAttribute('id', 'edit');
-            newEditBtn.setAttribute('name', elem['userId']);
+            newEditBtn.setAttribute('name', elem);
             newEditBtn.dataset.action = 'editWn';
-            newEditBtn.innerHTML = `Edytuj ${elem['userId']}`;
+            newEditBtn.innerHTML = (`Edytuj ${elem}`).substring(0, 11);
             newBtnDiv.append(newEditBtn);
             const newDelBtn = document.createElement('button');
             newDelBtn.classList.add('example__button');
             newDelBtn.setAttribute('type', 'button');
             newDelBtn.setAttribute('id', 'delete');
-            newDelBtn.setAttribute('name', elem['userId']);
+            newDelBtn.setAttribute('name', elem);
             newDelBtn.dataset.action = 'delete';
-            newDelBtn.innerHTML = `Usuń ${elem['userId']}`;
+            newDelBtn.innerHTML = (`Usuń ${elem}`).substring(0, 9);
             newBtnDiv.append(newDelBtn);
             heightCounter += 44;
         }
@@ -224,8 +224,8 @@
         })
             .then((response) => response.json())
             .then((response) => {
-                addPar(response);
                 console.log(JSON.stringify(response));
+                addPar(response);
             })
         form.reset();
     };
@@ -247,8 +247,8 @@
         })
             .then((response) => response.json())
             .then((response) => {
-                addPar(response);
                 console.log(JSON.stringify(response));
+                addPar(response);
             })
         formEdit.reset();
         makeHidden();
@@ -263,8 +263,8 @@
             })
                 .then((response) => response.json())
                 .then((response) => {
-                    addPar(response);
                     console.log(JSON.stringify(response));
+                    addPar(response);
                 })
         } else { return };
     };
